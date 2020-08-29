@@ -11,7 +11,7 @@ class MentionWidget extends StatelessWidget{
   Widget build(BuildContext context) {
     IconData icon = state ? Icons.check_circle : Icons.clear;
     Color color = state ? Colors.green : Colors.red;
-    double size = 50.0;
+    double size = 60.0;
     return Icon(icon, color: color, size: size);
   }
 
