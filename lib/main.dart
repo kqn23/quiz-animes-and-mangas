@@ -18,7 +18,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  void _beginGame() => Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new PlayPage()));
+  void _beginGame() => Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => new PlayPage()));
   void _getAbout() => Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new AboutPage()));
 
   Widget _createMainRaisedButton (String text,MaterialColor color, Icon icon, Function onPressed) {

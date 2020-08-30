@@ -56,6 +56,7 @@ class Question {
   }
 }
 
+
 class PlayPage extends StatefulWidget {
   @override
   _PlayPage createState() => _PlayPage();
@@ -65,8 +66,8 @@ class _PlayPage extends State<PlayPage> {
   Question _question;
 
   MentionWidget mention;
-  static int score = 0;
-  static int nbreQuiz = 20;
+  static int _score = 0;
+  static int _nbreQuestions = 20;
 
   @override
   void initState() {
@@ -87,6 +88,7 @@ class _PlayPage extends State<PlayPage> {
         backgroundColor: Colors.orange,
         elevation: 10.0,
         title: Text("Quiz animés et mangas"),
+        centerTitle: true,
       ),
       body: Container(
         padding: const EdgeInsets.all(10.0),
@@ -96,8 +98,10 @@ class _PlayPage extends State<PlayPage> {
               child: Container(
                 width: _screenWidth,
                 child: Center(
-                  child: Card(
-                    elevation: 10.0,
+                  child: GestureDetector(
+                    onTap: () {
+                      print("onTap image!");
+                    },
                     child: Image.asset(
                       _question.answer.getImage(),
                       width: _screenWidth / 1.25,
@@ -131,9 +135,10 @@ class _PlayPage extends State<PlayPage> {
           ],
         ),
       ),
-      floatingActionButton: DisplayScoreWidget(score: score),
+      floatingActionButton: DisplayScoreWidget(score: _score),
     );
   }
+
 
   SizedBox _createAnswerButton (String text, Function onPressed) {
     return SizedBox(
@@ -150,23 +155,24 @@ class _PlayPage extends State<PlayPage> {
     );
   }
 
-  void _checkAnswer(Character c) {
+  _checkAnswer(Character c) {
     setState(() {
       bool _isRightAnswer = c == _question.answer;
       mention = MentionWidget(state: _isRightAnswer);
-      score = _isRightAnswer ? score + 1 : score;
+      _score = _isRightAnswer ? _score + 1 : _score;
     });
 
     _nextGame();
   }
 
-  void _nextGame() {
-    --nbreQuiz;
-    if(nbreQuiz > 0) {
+  _nextGame() {
+    --_nbreQuestions;
+    if(_nbreQuestions > 0) {
       Navigator.of(context).pushReplacement(new MaterialPageRoute
         (builder: (BuildContext context) => new PlayPage()));
     } else {
-      int tmpScore = score; score = 0; nbreQuiz = 3;
+      int tmpScore = _score;
+      _score = 0; _nbreQuestions = 20;
       Navigator.of(context).pushReplacement(new MaterialPageRoute
         (builder: (BuildContext context) => ReplayPage(tmpScore)));
     }
