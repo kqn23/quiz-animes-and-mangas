@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'main.dart';
 import 'replay_page.dart';
 
 import 'characters.dart';
@@ -87,6 +89,16 @@ class _PlayPage extends State<PlayPage> {
       appBar: AppBar(
         backgroundColor: Colors.orange,
         elevation: 10.0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () {
+            _resetScoreAndNbreQuestions();
+            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (BuildContext context){
+              return new MyHomePage();
+            }));
+          },
+        ),
         title: Text("Quiz animés et mangas"),
         centerTitle: true,
       ),
@@ -118,6 +130,8 @@ class _PlayPage extends State<PlayPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Text("${20 - _nbreQuestions + 1} / 20"),
+                    SizedBox(height: 20.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [answerButtons[0], answerButtons[1]],
@@ -172,9 +186,14 @@ class _PlayPage extends State<PlayPage> {
         (builder: (BuildContext context) => new PlayPage()));
     } else {
       int tmpScore = _score;
-      _score = 0; _nbreQuestions = 20;
+      _resetScoreAndNbreQuestions();
       Navigator.of(context).pushReplacement(new MaterialPageRoute
         (builder: (BuildContext context) => ReplayPage(tmpScore)));
     }
+  }
+
+  _resetScoreAndNbreQuestions(){
+    _score = 0;
+    _nbreQuestions = 20;
   }
 }
