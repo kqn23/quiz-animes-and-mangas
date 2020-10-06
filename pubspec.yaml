@@ -24,6 +24,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  audioplayers: ^0.16.1
+  path_provider: ^1.6.14
+
+
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -47,6 +52,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
+    - assets/images/
+    - assets/sons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

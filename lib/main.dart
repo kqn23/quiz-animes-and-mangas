@@ -5,6 +5,7 @@ import 'about_page.dart';
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: const MyHomePage(),
   ));
 }
@@ -51,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Card(
                   elevation: 10.0,
                   margin: EdgeInsets.only(top: _screenSize.height / 10),
-                  child: Image.asset("assets/Logo.PNG"),
+                  child: Image.asset("assets/images/Logo.PNG"),
                 ),
               ),
             ),

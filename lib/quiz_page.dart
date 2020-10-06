@@ -1,11 +1,16 @@
+import 'dart:io';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'main.dart';
 import 'replay_page.dart';
 
 import 'characters.dart';
 
-class MentionWidget extends StatelessWidget{
+class MentionWidget extends StatelessWidget {
   const MentionWidget({this.state});
   final bool state;
 
@@ -16,7 +21,6 @@ class MentionWidget extends StatelessWidget{
     double size = 60.0;
     return Icon(icon, color: color, size: size);
   }
-
 }
 
 class DisplayScoreWidget extends StatelessWidget {
@@ -27,8 +31,8 @@ class DisplayScoreWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Text('Score : $score',
-      style: Theme.of(context).textTheme.headline5),
+      child:
+          Text('Score : $score', style: Theme.of(context).textTheme.headline5),
     );
   }
 }
@@ -41,7 +45,7 @@ class Question {
     allCharacters.shuffle();
 
     _potentialAnswers = new List<Character>();
-    for(int i = 0; i < 4; ++i){
+    for (int i = 0; i < 4; ++i) {
       _potentialAnswers.add(allCharacters[i]);
     }
 
@@ -58,7 +62,6 @@ class Question {
   }
 }
 
-
 class PlayPage extends StatefulWidget {
   @override
   _PlayPage createState() => _PlayPage();
@@ -71,6 +74,32 @@ class _PlayPage extends State<PlayPage> {
   static int _score = 0;
   static int _nbreQuestions = 20;
 
+  AudioPlayer audioPlayer = AudioPlayer();
+
+
+  Future<ByteData> _getLocalPath(String filename) async {
+    return await rootBundle.load("assets/sons/$filename.wav");
+  }
+
+  _playLocal(String filename) async {
+    final file = new File('${(await getTemporaryDirectory()).path}/$filename.wav');
+    await file.writeAsBytes((await _getLocalPath(filename)).buffer.asUint8List());
+    await audioPlayer.play(file.path, isLocal: true, volume: 1.0);
+  }
+
+  _goodAnswer() async{
+    await _playLocal("son_good_answer");
+  }
+
+
+  _badAnswer() async{
+    await _playLocal("son_bad_answer");
+  }
+
+  _stop() async {
+    await audioPlayer.stop();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -82,8 +111,11 @@ class _PlayPage extends State<PlayPage> {
     final double _screenWidth = MediaQuery.of(context).size.width;
     final double _screenHeight = MediaQuery.of(context).size.height;
 
-    List<SizedBox> answerButtons = _question.potentialAnswers.map((e) =>
-        _createAnswerButton(e.getName(), () { _checkAnswer(e); })).toList();
+    List<SizedBox> answerButtons = _question.potentialAnswers
+        .map((e) => _createAnswerButton(e.getName(), () {
+              _checkAnswer(e);
+            }))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -94,7 +126,8 @@ class _PlayPage extends State<PlayPage> {
           color: Colors.white,
           onPressed: () {
             _resetScoreAndNbreQuestions();
-            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (BuildContext context){
+            Navigator.of(context).pushReplacement(
+                new MaterialPageRoute(builder: (BuildContext context) {
               return new MyHomePage();
             }));
           },
@@ -140,7 +173,7 @@ class _PlayPage extends State<PlayPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [answerButtons[2], answerButtons[3]],
                     ),
-                    SizedBox(height: _screenHeight / 12.0),
+                    SizedBox(height: _screenHeight / 20.0),
                     (mention == null) ? SizedBox() : mention,
                   ],
                 ),
@@ -153,8 +186,7 @@ class _PlayPage extends State<PlayPage> {
     );
   }
 
-
-  SizedBox _createAnswerButton (String text, Function onPressed) {
+  SizedBox _createAnswerButton(String text, Function onPressed) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2.5,
       child: RaisedButton(
@@ -169,11 +201,16 @@ class _PlayPage extends State<PlayPage> {
     );
   }
 
-  _checkAnswer(Character c) {
+  _checkAnswer(Character c){
     setState(() {
       bool _isRightAnswer = c == _question.answer;
       mention = MentionWidget(state: _isRightAnswer);
       _score = _isRightAnswer ? _score + 1 : _score;
+      if(_isRightAnswer){
+        _goodAnswer();
+      } else {
+        _badAnswer();
+      }
     });
 
     _nextGame();
@@ -181,18 +218,18 @@ class _PlayPage extends State<PlayPage> {
 
   _nextGame() {
     --_nbreQuestions;
-    if(_nbreQuestions > 0) {
-      Navigator.of(context).pushReplacement(new MaterialPageRoute
-        (builder: (BuildContext context) => new PlayPage()));
+    if (_nbreQuestions > 0) {
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          builder: (BuildContext context) => new PlayPage()));
     } else {
       int tmpScore = _score;
       _resetScoreAndNbreQuestions();
-      Navigator.of(context).pushReplacement(new MaterialPageRoute
-        (builder: (BuildContext context) => ReplayPage(tmpScore)));
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          builder: (BuildContext context) => ReplayPage(tmpScore)));
     }
   }
 
-  _resetScoreAndNbreQuestions(){
+  _resetScoreAndNbreQuestions() {
     _score = 0;
     _nbreQuestions = 20;
   }
